@@ -62,6 +62,7 @@ class Screen1in54UI {
 
     public:
         
+        uint8_t clockFontType = 1;
         bool displayBeasy = false;
         Screen1in54UI(Env * nenv);
         void drawUIToBuffer();

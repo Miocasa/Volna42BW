@@ -25,11 +25,6 @@ int Screen1in54UI::drawTemp(int theight, bool indoor, float temperature, float h
   KellyCanvas * screen = env->getCanvas();
   screen->color = tBLACK;
 
-  if (env->noScreenTest) {
-    humidity = 33.6;
-    temperature = 22.4;
-  } 
-
   String title;
 
   if (temperature <= BAD_SENSOR_DATA) {
@@ -415,10 +410,12 @@ void Screen1in54UI::enableClockMode(bool state) {
         drawUIToBuffer();
 
         printf("Screen1in54UI draw Sensors info \r\n");
-        if (!env->noScreenTest) {
+        
+        #if !defined(DISABLE_SCREEN_UPDATE)
           updateScreen();
-        }
-
+        #else
+           Serial.println("[updateScreen] DEBUG : Screen disabled");
+         #endif
   }
 
 }
@@ -437,10 +434,12 @@ bool Screen1in54UI::tick() {
 
         env->updateTime(clockTime);
         drawClock();
-
-        if (!env->noScreenTest) {
+        
+        #if !defined(DISABLE_SCREEN_UPDATE)
           updateScreen();
-        }
+        #else
+           Serial.println("[updateScreen] DEBUG : Screen disabled");
+        #endif
         printf("Screen1in54UI draw clock \r\n");
 
     } else if (clockModeState == clockModeEnabled && now - constPowerTimerStart >= 15000) {
@@ -458,10 +457,10 @@ bool Screen1in54UI::tick() {
             Serial.println(String(clockTime));
             env->updateTime(clockTime);
 
-            if (!env->noScreenTest) {
+          
+          #if !defined(DISABLE_SCREEN_UPDATE)  
               updateClock();
-            }
-            
+          #endif
         }
     }
 
