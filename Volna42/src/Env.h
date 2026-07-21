@@ -188,8 +188,8 @@ class Env {
             GyverDS3231Min rtcChip;
         public:
             bool initExternalRTC();
-            void syncExternalRTCFromSystem();
-            bool syncSystemFromExternalRTC();
+            void syncExtRTCFromNTP();
+            bool syncTimeFromExtRTC();
     #endif
 
         bool requestTimeByDomoticz(u_int8_t tryn = 1, u_int8_t attempts = 2);

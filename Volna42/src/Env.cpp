@@ -339,7 +339,7 @@ void Env::initDefaultTime(bool compensateDelay) {
 #if defined(EXTERNAL_RTC_DS3231)
     else if (!lastState.timeConfigured) {
 
-      if (syncSystemFromExternalRTC()) {
+      if (syncTimeFromExtRTC()) {
         Serial.println(F("Default time restored from DS3231"));
       }
     }
@@ -390,7 +390,7 @@ bool Env::initExternalRTC() {
 	return true;
 }
 
-void Env::syncExternalRTCFromSystem() {
+void Env::syncExtRTCFromNTP() {
 	if (!rtcChip.setTime((uint32_t) time(nullptr))) {
 		Serial.println(F("[DS3231] Sync FAILED"));
 	} else {
@@ -398,7 +398,7 @@ void Env::syncExternalRTCFromSystem() {
 	}
 }
 
-bool Env::syncSystemFromExternalRTC() {
+bool Env::syncTimeFromExtRTC() {
 
     if (!initExternalRTC()) return false;
 
@@ -425,12 +425,18 @@ bool Env::syncSystemFromExternalRTC() {
 
 	auto time = rtcChip.getTime();
 	Serial.printf("[DS3231] Date: %s, DateIso: %s, Time: %s, Unix: %d\n",
-			  time.dateToString().c_str(),
-			  time.dateToStringISO().c_str(),
-			  time.timeToString().c_str(),
-			  time.getUnix()
-		  );
-	Serial.println((uint32_t) unixT);
+		time.dateToString().c_str(),
+		time.dateToStringISO().c_str(),
+		time.timeToString().c_str(),
+		time.getUnix()
+		);
+
+	// print as log (logs can be read on debug port, port named com on esp32s3 devkitc-1)
+	// log_i("[DS3231] Date: %s, DateIso: %s, Time: %s, Unix: %d\n",
+	// time.dateToString().c_str(),
+	// time.dateToStringISO().c_str(),
+	// time.timeToString().c_str(),
+	// time.getUnix());
 
     return true;
 }
@@ -800,7 +806,7 @@ bool Env::setupNTP(unsigned int attempt) {
     #endif
 
     #if defined(EXTERNAL_RTC_DS3231)
-      syncExternalRTCFromSystem();
+      syncExtRTCFromNTP();
     #endif
 
     // lastState.syncT = defaultTime;
